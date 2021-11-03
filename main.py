@@ -18,18 +18,19 @@ from fake_useragent import UserAgent
 configs = {
     'username': '',
     'password': '',
-    'city_index': '',
-    'unit_id': '',
-    'dep_id': '',
-    'doc_id': '',
-    'weeks': [],
-    'days': [],
-    'unit_name': '',
-    'dep_name': '',
-    'doctor_name': ''
+    'city_index': '9',
+    'unit_id': '21',
+    'dep_id': '4383',
+    'doc_id': '1262',
+    'weeks': ['1', '2', '3', '4', '5', '6', '7'],
+    'days': ['am', 'pm'],
+    'unit_name': '北京大学深圳医院',
+    'dep_name': '口腔正畸科',
+    'doctor_name': '白雪芹'
 }
 
-ua = UserAgent()
+ua = UserAgent(verify_ssl=False)
+# ua = UserAgent()
 
 PUBLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDWuY4Gff8FO3BAKetyvNgGrdZM9CMNoe45SzHMXxAPWw6E2idaEjqe5uJFjVx55JW" \
              "+5LUSGO1H5MdTcgGEfh62ink/cNjRGJpR25iVDImJlLi2izNs9zrQukncnpj6NGjZu" \
