@@ -29,6 +29,20 @@ configs = {
     'doctor_name': '白雪芹'
 }
 
+# configs = {
+#     'username': '18818697517',
+#     'password': 'Cfq12315',
+#     'city_index': '9',
+#     'unit_id': '21',
+#     'dep_id': '4383',
+#     'doc_id': '14627',
+#     'weeks': ['1', '2', '3', '4', '5', '6', '7'],
+#     'days': ['am', 'pm'],
+#     'unit_name': '北京大学深圳医院',
+#     'dep_name': '口腔正畸科',
+#     'doctor_name': '白雪芹'
+# }
+
 ua = UserAgent(verify_ssl=False)
 # ua = UserAgent()
 
@@ -272,12 +286,14 @@ def convert_week(w):
 
 
 def get_ticket(ticket, unit_id, dep_id):
+    logging.log("开始预约：")
     schedule_id = ticket["schedule_id"]
     url = "https://www.91160.com/guahao/ystep1/uid-{}/depid-{}/schid-{}.html".format(
         unit_id, dep_id, schedule_id)
     logging.info(url)
     r = session.get(url, headers=get_headers())
     r.encoding = r.apparent_encoding
+    logging.info(r.text)
     soup = BeautifulSoup(r.text, "html.parser")
     data = {
         "sch_data": soup.find(attrs={"name": "sch_data"}).attrs["value"],
@@ -439,6 +455,7 @@ def set_doctor_configs():
     url = "https://www.91160.com/dep/getschmast/uid-{}/depid-{}/date-{}/p-0.html".format(
         unit_id, dep_id, now_date)
     r = session.get(url, headers=get_headers())
+    print(r.text)
     doctors = r.json()["doc"]
     doc_id_arr = []
     doc_name = {}
@@ -532,6 +549,7 @@ def run():
                 else:
                     continue
             except Exception as e:
+                logging.info(tickets)
                 logging.info("抢票失败，正在重试，发生错误：{}".format(e))
                 continue
             break
