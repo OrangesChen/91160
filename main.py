@@ -29,20 +29,6 @@ configs = {
     'doctor_name': '白雪芹'
 }
 
-# configs = {
-#     'username': '18818697517',
-#     'password': 'Cfq12315',
-#     'city_index': '9',
-#     'unit_id': '21',
-#     'dep_id': '4383',
-#     'doc_id': '14627',
-#     'weeks': ['1', '2', '3', '4', '5', '6', '7'],
-#     'days': ['am', 'pm'],
-#     'unit_name': '北京大学深圳医院',
-#     'dep_name': '口腔正畸科',
-#     'doctor_name': '白雪芹'
-# }
-
 ua = UserAgent(verify_ssl=False)
 # ua = UserAgent()
 
