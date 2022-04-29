@@ -1,17 +1,18 @@
 # coding: utf-8
 # author: MasterPan
 # email:  i@hvv.me
-
+# import datetime
+import json
+import logging
 import re
 import time
-import json
-import datetime
-import logging
+from base64 import b64decode, b64encode
+from datetime import datetime
+
 import requests.cookies
 from bs4 import BeautifulSoup
-from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_v1_5 as Cipher_PKCS1_v1_5
-from base64 import b64decode, b64encode
+from Crypto.PublicKey import RSA
 from fake_useragent import UserAgent
 
 # 请修改此处，或者保持为空
@@ -25,11 +26,11 @@ configs = {
     'weeks': ['1', '2', '3', '4', '5', '6', '7'],
     'days': ['am', 'pm'],
     'unit_name': '北京大学深圳医院',
-    'dep_name': '口腔正畸科',
-    'doctor_name': '白雪芹'
+    'dep_name': '',
+    'doctor_name': ''
 }
 
-ua = UserAgent(verify_ssl=False)
+ua = UserAgent(verify_ssl=False, use_cache_server=True)
 # ua = UserAgent()
 
 PUBLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDWuY4Gff8FO3BAKetyvNgGrdZM9CMNoe45SzHMXxAPWw6E2idaEjqe5uJFjVx55JW" \
@@ -195,7 +196,8 @@ def tokens() -> str:
 
 
 def brush_ticket(unit_id, dep_id, weeks, days) -> list:
-    now_date = datetime.date.today().strftime("%Y-%m-%d")
+    now_date = datetime.today().strftime("%Y-%m-%d")
+
     url = "https://www.91160.com/dep/getschmast/uid-{}/depid-{}/date-{}/p-0.html".format(
         unit_id, dep_id, now_date)
     r = session.get(url, headers=get_headers())
@@ -224,7 +226,7 @@ def brush_ticket(unit_id, dep_id, weeks, days) -> list:
 
 
 def brush_ticket_new(doc_id, dep_id, weeks, days) -> list:
-    now_date = datetime.date.today().strftime("%Y-%m-%d")
+    now_date = datetime.today().strftime("%Y-%m-%d")
     url = "https://www.91160.com/doctors/ajaxgetclass.html"
     data = {
         "docid": doc_id,
@@ -435,7 +437,7 @@ def set_department_configs():
 
 
 def set_doctor_configs():
-    now_date = datetime.date.today().strftime("%Y-%m-%d")
+    now_date = datetime.today().strftime("%Y-%m-%d")
     unit_id = configs["unit_id"]
     dep_id = configs["dep_id"]
     url = "https://www.91160.com/dep/getschmast/uid-{}/depid-{}/date-{}/p-0.html".format(
@@ -515,6 +517,7 @@ def run():
     days = configs["days"]
     # 刷票休眠时间，频率过高会导致刷票接口拒绝请求
     sleep_time = 15
+    success = False
 
     logging.info("刷票开始")
     logging.info(
@@ -529,6 +532,8 @@ def run():
         if len(tickets) > 0:
             logging.info(tickets)
             logging.info("刷到票了，开抢了...")
+            sleep_time = 10
+            success = True
             try:
                 if get_ticket(tickets[0], unit_id, dep_id):
                     break
@@ -541,6 +546,13 @@ def run():
             break
         else:
             logging.info("努力刷票中...")
+
+        now = datetime.now()
+        current_time = now.strftime("%H:%M:%S")
+        print(current_time)
+        print(current_time > "14:59:00" and current_time < "15:05:00")
+        if current_time > "14:59:00" and current_time < "15:05:00":
+            sleep_time = 5 if success else 15
         time.sleep(sleep_time)
     logging.info("刷票结束")
     print("当前配置为：\n\t%s" % configs)
